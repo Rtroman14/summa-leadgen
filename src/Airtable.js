@@ -63,10 +63,10 @@ module.exports = class AirtableApi {
                 recordID: contact.getId(),
             }));
 
-            return contacts.length ? contacts : false;
+            return contacts.length ? contacts : [];
         } catch (error) {
             console.log("ERROR GETCONTACTSBYFILTER() ---", error);
-            return false;
+            return [];
         }
     }
 
@@ -118,5 +118,25 @@ module.exports = class AirtableApi {
             console.log("ERROR BATCHUPLOAD() ---", error);
             return false;
         }
+    }
+
+    async fetchArchiveBases(baseIDs, outreach) {
+        let allContacts = [];
+
+        const fetchArchiveBasesReq = baseIDs.map((baseID) =>
+            this.getFilteredRecords(baseID, {
+                field: "Outreach",
+                value: outreach,
+            })
+        );
+        const archivedContacts = await Promise.all(fetchArchiveBasesReq);
+
+        for (let archivedContact of archivedContacts) {
+            allContacts = [...allContacts, ...archivedContact];
+        }
+
+        console.log("Fetched archived base(s):", allContacts.length);
+
+        return allContacts;
     }
 };

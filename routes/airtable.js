@@ -84,14 +84,34 @@ router.post("/validate", async (req, res) => {
 
             // Farha
             if (baseID === "app1Fif2x748y3tnn") {
-                console.log("Fetching Farha's archived base");
-                let farhaArchivedContacts = await Airtable.getFilteredRecords("appAJd8DNpOfsXN53", {
-                    field: "Outreach",
-                    value: "Email",
-                });
-                console.log(`Farha's archived based: ${farhaArchivedContacts.length}`);
+                // let farhaArchivedContacts = await Airtable.getFilteredRecords("appAJd8DNpOfsXN53", {
+                //     field: "Outreach",
+                //     value: "Email",
+                // });
+                // console.log(`Farha's archived based: ${farhaArchivedContacts.length}`);
 
-                airtableContacts = [...airtableContacts, ...farhaArchivedContacts];
+                // airtableContacts = [...airtableContacts, ...farhaArchivedContacts];
+                const archivedContacts = await Airtable.fetchArchiveBases(
+                    ["app3yxqMbRKS90o3E", "appAJd8DNpOfsXN53"],
+                    "Email"
+                );
+                airtableContacts = [...airtableContacts, ...archivedContacts];
+            }
+            // Roper
+            if (baseID === "appr7rcKd3W6oMdiC") {
+                const archivedContacts = await Airtable.fetchArchiveBases(
+                    ["appeGXwk0TSkWK325"],
+                    "Email"
+                );
+                airtableContacts = [...airtableContacts, ...archivedContacts];
+            }
+            // Eco Tec
+            if (baseID === "appoNqmB15dMPPEXD") {
+                const archivedContacts = await Airtable.fetchArchiveBases(
+                    ["appUzWnleU21USqls"],
+                    "Email"
+                );
+                airtableContacts = [...airtableContacts, ...archivedContacts];
             }
 
             if (airtableContacts) {
@@ -130,14 +150,27 @@ router.post("/validate", async (req, res) => {
 
             // Farha
             if (baseID === "app1Fif2x748y3tnn") {
-                console.log("Fetching Farha's archived base");
-                let farhaArchivedContacts = await Airtable.getFilteredRecords("appAJd8DNpOfsXN53", {
-                    field: "Outreach",
-                    value: "Text",
-                });
-                console.log(`Farha's archived based: ${farhaArchivedContacts.length}`);
-
-                airtableContacts = [...airtableContacts, ...farhaArchivedContacts];
+                const archivedContacts = await Airtable.fetchArchiveBases(
+                    ["app3yxqMbRKS90o3E", "appAJd8DNpOfsXN53"],
+                    "Text"
+                );
+                airtableContacts = [...airtableContacts, ...archivedContacts];
+            }
+            // Roper
+            if (baseID === "appr7rcKd3W6oMdiC") {
+                const archivedContacts = await Airtable.fetchArchiveBases(
+                    ["appeGXwk0TSkWK325"],
+                    "Text"
+                );
+                airtableContacts = [...airtableContacts, ...archivedContacts];
+            }
+            // Eco Tec
+            if (baseID === "appoNqmB15dMPPEXD") {
+                const archivedContacts = await Airtable.fetchArchiveBases(
+                    ["appUzWnleU21USqls"],
+                    "Text"
+                );
+                airtableContacts = [...airtableContacts, ...archivedContacts];
             }
 
             if (airtableContacts) {

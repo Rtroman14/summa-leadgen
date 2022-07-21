@@ -5,6 +5,8 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require("twilio")(accountSid, authToken);
 
 const axios = require("axios");
+const AirtableApi = require("./Airtable");
+const Airtable = new AirtableApi(process.env.AIRTABLE_API);
 
 module.exports = class HelpersApi {
     filterValidEmails = (results) => {
