@@ -31,6 +31,12 @@ router.post("/validate", async (req, res) => {
         console.log("Reonomy Export");
         prospects = await axios.post(`${domain}/parse/reonomy-export`, { record });
     }
+    if (runValidator && record.Source === "ZoomInfo") {
+        prospects = await axios.post(`${domain}/parse/zoominfo`, { record });
+    }
+    if (runValidator && record.Source === "ZoomInfo Export") {
+        prospects = await axios.post(`${domain}/parse/zoominfo-export`, { record });
+    }
     if (runValidator && record.Source === "CoStar") {
         prospects = await axios.post(`${domain}/parse/costar`, { record });
         // formate prospects for Airtable then validate numbers
@@ -55,7 +61,7 @@ router.post("/validate", async (req, res) => {
                 "Email"
             );
 
-            console.log("New email total =", emailContacts.length);
+            console.log("New email total:", emailContacts.length);
 
             let emailProspects = Helper.formatAirtableContacts(emailContacts);
 
@@ -72,7 +78,7 @@ router.post("/validate", async (req, res) => {
         let { mobileContacts, emailContacts } = prospects.data;
 
         if (!("Email" in record)) {
-            console.log(`Email contacts: ${emailContacts.length}`);
+            console.log("Email contacts", emailContacts.length);
 
             const title = `${client} - ${record.Location}`;
 
@@ -84,13 +90,6 @@ router.post("/validate", async (req, res) => {
 
             // Farha
             if (baseID === "app1Fif2x748y3tnn") {
-                // let farhaArchivedContacts = await Airtable.getFilteredRecords("appAJd8DNpOfsXN53", {
-                //     field: "Outreach",
-                //     value: "Email",
-                // });
-                // console.log(`Farha's archived based: ${farhaArchivedContacts.length}`);
-
-                // airtableContacts = [...airtableContacts, ...farhaArchivedContacts];
                 const archivedContacts = await Airtable.fetchArchiveBases(
                     ["app3yxqMbRKS90o3E", "appAJd8DNpOfsXN53"],
                     "Email"
@@ -118,7 +117,7 @@ router.post("/validate", async (req, res) => {
                 emailContacts = Helper.arrayDifference(emailContacts, airtableContacts, "Email");
             }
 
-            console.log(`Email contacts after filter: ${emailContacts.length}`);
+            console.log("Email contacts after filter:", emailContacts.length);
 
             const { data } = await axios.post(`${domain}/neverbounce/create-job`, {
                 emailContacts,
@@ -130,7 +129,7 @@ router.post("/validate", async (req, res) => {
                 await Airtable.updateRecord(baseID, record.id, {
                     "Neverbounce Job": data.job_id,
                 });
-                console.log(`Uploaded prospects to Neverbounce: ${data.job_id}`);
+                console.log("Uploaded prospects to Neverbounce:", data.job_id);
             } else {
                 await Airtable.updateRecord(baseID, record.id, { Email: "Error" });
                 console.log("ERROR uploading prospects to Neverbounce");
@@ -140,7 +139,7 @@ router.post("/validate", async (req, res) => {
         }
 
         if (!("Text" in record) && record.Source !== "Icy Leads") {
-            console.log(`Mobile contacts: ${mobileContacts.length}`);
+            console.log("Mobile contacts:", mobileContacts.length);
 
             // filter current reonomy contacts against contacts in view: "Texted"
             let airtableContacts = await Airtable.getFilteredRecords(baseID, {
@@ -190,10 +189,11 @@ router.post("/validate", async (req, res) => {
                 );
             }
 
-            console.log(`Mobile contacts after filter: ${mobileContacts.length}`);
+            console.log("Mobile contacts after filter:", mobileContacts.length);
 
             mobileContacts = Helper.formatAirtableContacts(mobileContacts);
 
+            console.log("Uploading prospects...");
             const { data } = await axios.post(`${domain}/airtable/upload-mobile`, {
                 mobileContacts,
                 baseID,

@@ -11,6 +11,8 @@ const parseCoStar = require("../src/parseCoStar");
 const parseReonomyExport = require("../src/parseReonomyExport");
 const parseIcyLeads = require("../src/parseIcyLeads");
 const parseApollo = require("../src/parseApollo");
+const parseZoomInfo = require("../src/parseZoomInfo");
+const parseZoomInfoExport = require("../src/parseZoomInfoExport");
 
 router.post("/reonomy", async (req, res) => {
     const { record } = req.body;
@@ -43,6 +45,39 @@ router.post("/reonomy-export", async (req, res) => {
     let reonomyExportProspects = await parseReonomyExport(record.Data[0].url, tag);
 
     res.json(reonomyExportProspects);
+});
+
+router.post("/zoominfo", async (req, res) => {
+    const { record } = req.body;
+
+    let tag = "";
+
+    if ("Tag" in record) {
+        tag = record.Tag;
+    }
+
+    // read json attachment
+    let prospects = await Helper.readFiles(record);
+
+    // parse zoomInfo data
+    let zoomInfoProspects = await parseZoomInfo(prospects, tag);
+
+    res.json(zoomInfoProspects);
+});
+
+router.post("/zoominfo-export", async (req, res) => {
+    const { record } = req.body;
+
+    let tag = "";
+
+    if ("Tag" in record) {
+        tag = record.Tag;
+    }
+
+    // parse zoomInfo data
+    let zoomInfoProspects = await parseZoomInfoExport(record.Data[0].url, tag);
+
+    res.json(zoomInfoProspects);
 });
 
 router.post("/costar", async (req, res) => {

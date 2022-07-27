@@ -3,10 +3,10 @@ const Helper = new HelpersApi();
 
 const axios = require("axios");
 
-const titles = require("./titles");
+// const titles = require("./titles");
 
 module.exports = async (url, tag) => {
-    const re = new RegExp(titles, "i");
+    // const re = new RegExp(titles, "i");
 
     let prospects = [];
 
@@ -72,12 +72,12 @@ module.exports = async (url, tag) => {
             return prospect.State === prospect["Prospect State"];
         });
 
-        let prospectTitles = sameStateProspects.filter((prospect) => re.test(prospect.Title));
+        // let prospectTitles = sameStateProspects.filter((prospect) => re.test(prospect.Title));
 
-        let mobileContacts = prospectTitles.filter(
+        let mobileContacts = sameStateProspects.filter(
             (prospect) => prospect["Phone Type"] === "mobile" && prospect["Phone Type"] !== ""
         );
-        let emailContacts = prospectTitles.filter(
+        let emailContacts = sameStateProspects.filter(
             (prospect) => prospect["Phone Type"] !== "Email" && prospect.Email !== ""
         );
 
