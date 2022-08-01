@@ -30,4 +30,13 @@ airtableContacts = airtableContacts.map((contact) => ({
 
 const results = arrayDifference(reonomyContacts, airtableContacts, "phoneNumber");
 
-console.log(results);
+// console.log(results);
+
+let test = [];
+airtableContacts.forEach((contact) => {
+    if (contact.id === "30") return;
+
+    test.push(contact);
+});
+
+console.log(test);

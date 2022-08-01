@@ -119,23 +119,27 @@ router.post("/validate", async (req, res) => {
 
             console.log("Email contacts after filter:", emailContacts.length);
 
-            const { data } = await axios.post(`${domain}/neverbounce/create-job`, {
-                emailContacts,
-                title,
-            });
+            // * exporting file for now till email is figured out
+            await Airtable.updateRecord(baseID, record.id, { Email: "Error" });
+            writeCsv(emailContacts, title);
 
-            if (data) {
-                await Airtable.updateRecord(baseID, record.id, { Email: "In Neverbounce" });
-                await Airtable.updateRecord(baseID, record.id, {
-                    "Neverbounce Job": data.job_id,
-                });
-                console.log("Uploaded prospects to Neverbounce:", data.job_id);
-            } else {
-                await Airtable.updateRecord(baseID, record.id, { Email: "Error" });
-                console.log("ERROR uploading prospects to Neverbounce");
+            // const { data } = await axios.post(`${domain}/neverbounce/create-job`, {
+            //     emailContacts,
+            //     title,
+            // });
 
-                writeCsv(emailContacts, title);
-            }
+            // if (data) {
+            //     await Airtable.updateRecord(baseID, record.id, { Email: "In Neverbounce" });
+            //     await Airtable.updateRecord(baseID, record.id, {
+            //         "Neverbounce Job": data.job_id,
+            //     });
+            //     console.log("Uploaded prospects to Neverbounce:", data.job_id);
+            // } else {
+            //     await Airtable.updateRecord(baseID, record.id, { Email: "Error" });
+            //     console.log("ERROR uploading prospects to Neverbounce");
+
+            //     writeCsv(emailContacts, title);
+            // }
         }
 
         if (!("Text" in record) && record.Source !== "Icy Leads") {

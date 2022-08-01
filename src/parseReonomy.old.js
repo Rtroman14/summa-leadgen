@@ -1,107 +1,36 @@
+const HelpersApi = require("./Helpers");
+const Helper = new HelpersApi();
+
+// const titles = require("./titles");
+
 module.exports = async (reonomyData, tag) => {
-    let contacts = [];
+    // const re = new RegExp(titles, "i");
 
     try {
-        for (let property of reonomyData) {
-            const lastPersonKey = Object.keys(property)[Object.keys(property).length - 1]; // person-2_name
+        // map over tag
+        reonomyData = reonomyData.map((contact) => ({ ...contact, Tag: tag }));
 
-            const numPeople = lastPersonKey.slice(
-                lastPersonKey.indexOf("-") + 1,
-                lastPersonKey.indexOf("_")
-            ); // 2
+        // TODO: make object values string
 
-            for (let num = 0; num <= numPeople; num++) {
-                let person = {};
+        // // filter list to same state prospects
+        // const sameStateProspects = reonomyData.filter((prospect) => {
+        //     const state = prospect.State;
+        //     const prospectState =
+        //         prospect["Contact Address"].split(" ")[
+        //             prospect["Contact Address"].split(" ").length - 2
+        //         ];
 
-                let mobileKeys = [];
-                for (let key in property) {
-                    key.includes(`person-${num}_mobile`) && mobileKeys.push(key);
-                }
+        //     return state === prospectState;
+        // });
 
-                if (mobileKeys.length) {
-                    for (let [numMobile, key] of mobileKeys.entries()) {
-                        person["Full Name"] = property[`person-${num}_name`] || "";
-                        person["First Name"] = property[`person-${num}_name`].split(" ")[0] || "";
-                        person["Last Name"] =
-                            property[`person-${num}_name`].split(" ").slice(1).join(" ") || "";
-                        person["Phone Number"] =
-                            property[`person-${num}_mobile-${numMobile}`] || "";
-                        person["Square Feet"] =
-                            property.buildingArea === "--" ? "" : property.buildingArea;
-                        person.Address = property.address.length === 2 ? "" : property.address;
-                        person.Street = property.street || "";
-                        person.City = property.city.length === 2 ? "" : property.city;
-                        person.State = String(property.state).length === 2 ? property.state : "";
-                        person.Zip = property.zip.length === 2 ? "" : property.zip;
-                        person.Email = property[`person-${num}_email`] || "";
-                        person["Company Name"] = property.companyName || "";
-                        person["Company Address"] = property.companyAddress || "";
-                        person["Year Built"] =
-                            property.yearBuild === "--" ? "" : property.yearBuild;
-                        person["Year Renovated"] =
-                            property.yearRenovated === "--" ? "" : property.yearRenovated;
-                        person["Building Type"] = property.type || "";
-                        person.Outreach = "Text";
-                    }
-                } else {
-                    person["Full Name"] = property[`person-${num}_name`] || "";
-                    person["First Name"] = property[`person-${num}_name`].split(" ")[0] || "";
-                    person["Last Name"] =
-                        property[`person-${num}_name`].split(" ").slice(1).join(" ") || "";
-                    person["Phone Number"] = "";
-                    person["Square Feet"] =
-                        property.buildingArea === "--" ? "" : property.buildingArea;
-                    person.Address = property.address.length === 2 ? "" : property.address;
-                    person.Street = property.street || "";
-                    person.City = property.city.length === 2 ? "" : property.city;
-                    person.State = String(property.state).length === 2 ? property.state : "";
-                    person.Zip = property.zip.length === 2 ? "" : property.zip;
-                    person.Email = property[`person-${num}_email`] || "";
-                    person["Company Name"] = property.companyName || "";
-                    person["Company Address"] = property.companyAddress || "";
-                    person["Year Built"] = property.yearBuild === "--" ? "" : property.yearBuild;
-                    person["Year Renovated"] =
-                        property.yearRenovated === "--" ? "" : property.yearRenovated;
-                    person["Building Type"] = property.type || "";
-                    person.Outreach = "Email";
-                }
+        // let prospectTitles = reonomyData.filter((prospect) => re.test(prospect.Title));
 
-                contacts.push(person);
-            }
-        }
+        let mobileContacts = reonomyData.filter((prospect) => prospect.Outreach === "Text");
+        let emailContacts = reonomyData.filter((prospect) => prospect.Outreach === "Email");
 
-        contacts = contacts.map((contact) => ({ ...contact, Tag: tag }));
-
-        // remove duplicates
-        const contactsJson = new Set(contacts.map((e) => JSON.stringify(e)));
-        contacts = Array.from(contactsJson).map((e) => JSON.parse(e));
-
-        let mobileList = [];
-        let nameList = [];
-
-        const mobileContacts = contacts.filter((contact) => {
-            if (contact["Phone Number"] !== "" && !mobileList.includes(contact["Phone Number"])) {
-                mobileList.push(contact["Phone Number"]);
-                nameList.push(contact["Full Name"]);
-                return contact;
-            }
-        });
-
-        let emailList = [];
-
-        const emailContacts = contacts.filter((contact) => {
-            if (
-                contact.Email !== "" &&
-                !emailList.includes(contact.Email) &&
-                !nameList.includes(contact["Full Name"])
-            ) {
-                emailList.push(contact.Email);
-                return contact;
-            }
-        });
-
-        console.log("emails total =", emailContacts.length);
-        console.log("mobile total =", mobileContacts.length);
+        // remove duplicates contacts
+        mobileContacts = Helper.removeDuplicateKey(mobileContacts, "Phone Number");
+        emailContacts = Helper.removeDuplicateKey(emailContacts, "Email");
 
         return {
             mobileContacts,
