@@ -78,7 +78,7 @@ router.post("/validate", async (req, res) => {
         let { mobileContacts, emailContacts } = prospects.data;
 
         if (!("Email" in record)) {
-            console.log("Email contacts", emailContacts.length);
+            console.log("Email contacts:", emailContacts.length);
 
             const title = `${client} - ${record.Location}`;
 
