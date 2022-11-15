@@ -1,42 +1,24 @@
-const arrayDifference = (newArray, array, key) =>
-    newArray.filter(({ [key]: value1 }) => !array.some(({ [key]: value2 }) => value2 === value1));
+const data = require("./files/Houston TX, 5k sqft_T=11_7_2022-09_05 (1).json");
 
-let reonomyContacts = [
-    { id: "0", display: "Jamsheer", phoneNumber: "(715) 252-0000" },
-    { id: "1", display: "Muhammed", phoneNumber: "(715) 252-0001" },
-    { id: "2", display: "Ravi", phoneNumber: "(715) 252-0002" },
-    { id: "3", display: "Ajmal", phoneNumber: "(715) 252-0003" },
-    { id: "4", display: "Different", phoneNumber: "(715) 252-9999" }, // diff
-    { id: "5", display: "Different", phoneNumber: "(715) 252-9998" }, // diff
-];
+const writeCsv = require("./src/writeCsv");
 
-let airtableContacts = [
-    { id: "00", display: "Jamsheer", phoneNumber: "715-252-0000" },
-    { id: "10", display: "Muhammed", phoneNumber: "715-252-0001" },
-    { id: "20", display: "Ravi", phoneNumber: "715-252-0002" },
-    { id: "30", display: "Ajmal", phoneNumber: "715-252-0003" },
-    { id: "40", display: "Different", phoneNumber: "715-252-0004" },
-    { id: "50", display: "Different", phoneNumber: "715-252-0005" },
-];
+(async () => {
+    try {
+        let jobTitles = [];
 
-reonomyContacts = reonomyContacts.map((contact) => ({
-    ...contact,
-    phoneNumber: contact.phoneNumber.replace(/\D/g, ""),
-}));
-airtableContacts = airtableContacts.map((contact) => ({
-    ...contact,
-    phoneNumber: contact.phoneNumber.replace(/\D/g, ""),
-}));
+        data.forEach((property) => {
+            property?.prospects?.forEach((prospect) => {
+                if (prospect.companies[0]?.title[0]) {
+                    jobTitles.push(prospect.companies[0]?.title[0]);
+                }
+            });
+        });
 
-const results = arrayDifference(reonomyContacts, airtableContacts, "phoneNumber");
+        jobTitles = [...new Set(jobTitles)];
+        console.log(jobTitles.length);
 
-// console.log(results);
-
-let test = [];
-airtableContacts.forEach((contact) => {
-    if (contact.id === "30") return;
-
-    test.push(contact);
-});
-
-console.log(test);
+        writeCsv(jobTitles, "Reonomy Job Titles");
+    } catch (error) {
+        console.log(error);
+    }
+})();

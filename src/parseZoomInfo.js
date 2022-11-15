@@ -8,11 +8,11 @@ module.exports = async (prospects, tag) => {
 
         let mobileContacts = prospects
             .filter((prospect) => prospect["Phone Number"] !== "")
-            .map((prospect) => ({ ...prospect, Outreach: "Text", Email: "", Tag: tag }));
+            .map((prospect) => ({ ...prospect, Outreach: "Text", Tag: tag }));
 
         let emailContacts = prospects
             .filter((prospect) => prospect.Email !== "")
-            .map((prospect) => ({ ...prospect, Outreach: "Email", "Phone Number": "", Tag: tag }));
+            .map((prospect) => ({ ...prospect, Outreach: "Email", Tag: tag }));
 
         // remove duplicates contacts
         mobileContacts = Helper.removeDuplicateKey(mobileContacts, "Phone Number");
